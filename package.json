@@ -1,0 +1,25 @@
+{
+  "name": "phonebook_backend",
+  "version": "1.0.0",
+  "description": "A simple node application that returns a hardcoded list of phonebook entries",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tobisupreme/phonebook_backend.git"
+  },
+  "keywords": [
+    "backend",
+    "node",
+    "api"
+  ],
+  "author": "tobisupreme",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tobisupreme/phonebook_backend/issues"
+  },
+  "homepage": "https://github.com/tobisupreme/phonebook_backend#readme"
+}
