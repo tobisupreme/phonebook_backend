@@ -53,6 +53,12 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
+app.delete('/api/persons/:id', (req, res) => {
+  const entryId = Number(req.params.id)
+  entries = entries.filter((entry) => entry.id != entryId)
+  res.status(204).end()
+})
+
 const PORT = 3001
 app.listen(process.env.PORT || PORT, () => {
   console.log(`Server is listening on ${PORT}`)
