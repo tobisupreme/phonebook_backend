@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
 app.set('view engine', 'ejs')
 
 let entries = [
@@ -51,6 +52,20 @@ app.get('/api/persons/:id', (req, res) => {
   } else {
     res.status(404).end()
   }
+})
+
+const generateId = () => {
+  return Math.floor(Math.random() * 9999999)
+}
+
+app.post('/api/persons', (req, res) => {
+  const newPerson = {
+    name: req.body.name,
+    number: req.body.number,
+    id: generateId()
+  }
+  entries = entries.concat(newPerson)
+  res.json(newPerson)
 })
 
 app.delete('/api/persons/:id', (req, res) => {
