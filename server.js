@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.set('view engine', 'ejs')
+
 let entries = [
   {
     id: 1,
@@ -23,6 +25,19 @@ let entries = [
     number: '39-23-6423122',
   },
 ]
+
+const getNumberOfEntries = () => {
+  return entries.length
+}
+
+app.get('/info', (req, res) => {
+  res.render('info', {
+    phonebook: {
+      count: getNumberOfEntries(),
+      date: new Date(),
+    },
+  })
+})
 
 app.get('/api/persons', (req, res) => {
   res.json(entries).end()
