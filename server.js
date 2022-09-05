@@ -43,6 +43,16 @@ app.get('/api/persons', (req, res) => {
   res.json(entries).end()
 })
 
+app.get('/api/persons/:id', (req, res) => {
+  const entryId = Number(req.params.id)
+  const entry = entries.find((entry) => entry.id === entryId)
+  if (entry) {
+    res.send(entry).end()
+  } else {
+    res.status(404).end()
+  }
+})
+
 const PORT = 3001
 app.listen(process.env.PORT || PORT, () => {
   console.log(`Server is listening on ${PORT}`)
