@@ -58,11 +58,31 @@ const generateId = () => {
   return Math.floor(Math.random() * 9999999)
 }
 
+function checkDuplicate(name) {
+  let entryNames = entries.map((entry) => entry.name.toLocaleLowerCase())
+  
+  for (let i = 0; i < entryNames.length; i++) {
+    if (entryNames[i] == name.toLocaleLowerCase()) {
+      return true
+    }
+  }
+
+  return false
+}
+
 app.post('/api/persons', (req, res) => {
+  const body = req.body
+
+  if (!(body.name && body.number)) {
+    return res.status(400).send({ error: 'You must provide a name and number' }).end()
+  } else if (checkDuplicate(body.name)) {
+    return res.status(400).send({ error: 'Name must be unique' }).end()
+  }
+
   const newPerson = {
+    id: generateId(),
     name: req.body.name,
     number: req.body.number,
-    id: generateId()
   }
   entries = entries.concat(newPerson)
   res.json(newPerson)
