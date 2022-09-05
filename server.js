@@ -1,8 +1,15 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 app.use(express.json())
 app.set('view engine', 'ejs')
+
+morgan.token('reqBody', (req) => {
+  return JSON.stringify(req.body)
+})
+
+app.use(morgan(':method :url :status :response-time ms :reqBody'))
 
 let entries = [
   {
@@ -60,7 +67,7 @@ const generateId = () => {
 
 function checkDuplicate(name) {
   let entryNames = entries.map((entry) => entry.name.toLocaleLowerCase())
-  
+
   for (let i = 0; i < entryNames.length; i++) {
     if (entryNames[i] == name.toLocaleLowerCase()) {
       return true
