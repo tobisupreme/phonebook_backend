@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/phonebook')
 
 app.use(express.json())
 app.use(express.static('build'))
@@ -38,21 +39,27 @@ let entries = [
   },
 ]
 
-const getNumberOfEntries = () => {
+const getNumberOfEntries = (entries) => {
   return entries.length
 }
 
 app.get('/info', (req, res) => {
-  res.render('info', {
-    phonebook: {
-      count: getNumberOfEntries(),
-      date: new Date(),
-    },
-  })
+  Person.find({})
+    .then((result) => {
+      const resultObj = {}
+      resultObj.phonebook = {
+        count: getNumberOfEntries(result),
+        date: new Date(),
+      }
+      return resultObj
+    })
+    .then((resultObj) => {
+      res.render('info', resultObj)
+    })
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(entries).end()
+  Person.find({}).then((result) => res.json(result))
 })
 
 app.get('/api/persons/:id', (req, res) => {
@@ -86,17 +93,15 @@ app.post('/api/persons', (req, res) => {
 
   if (!(body.name && body.number)) {
     return res.status(400).send({ error: 'You must provide a name and number' }).end()
-  } else if (checkDuplicate(body.name)) {
+  } /* else if (checkDuplicate(body.name)) {
     return res.status(400).send({ error: 'Name must be unique' }).end()
-  }
+  } */
 
-  const newPerson = {
-    id: generateId(),
-    name: req.body.name,
-    number: req.body.number,
-  }
-  entries = entries.concat(newPerson)
-  res.json(newPerson)
+  const newPerson = new Person({
+    name: body.name,
+    number: body.number,
+  })
+  newPerson.save().then(() => res.json(newPerson))
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -105,7 +110,7 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
-const PORT = 3001
-app.listen(process.env.PORT || PORT, () => {
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`)
 })
