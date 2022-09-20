@@ -29,6 +29,7 @@
   "homepage": "https://github.com/tobisupreme/phonebook_backend#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
     "ejs": "^3.1.8",
     "express": "^4.18.1",
     "mongoose": "^6.6.1",
