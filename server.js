@@ -104,10 +104,14 @@ app.post('/api/persons', (req, res) => {
   newPerson.save().then(() => res.json(newPerson))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  const entryId = Number(req.params.id)
-  entries = entries.filter((entry) => entry.id != entryId)
-  res.status(204).end()
+/**
+ * Delete phonebook entries
+ */
+app.delete('/api/persons/:id', (req, res, next) => {
+  const entryId = req.params.id
+  Person.findByIdAndRemove(entryId)
+    .then(() => res.status(204).end())
+    .catch((err) => next(err))
 })
 
 const PORT = process.env.PORT || 3001
