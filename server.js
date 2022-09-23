@@ -16,33 +16,6 @@ morgan.token('reqBody', (req) => {
 
 app.use(morgan(':method :url :status :response-time ms :reqBody'))
 
-let entries = [
-  {
-    id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: 2,
-    name: 'Yemi Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: 4,
-    name: 'Esther Poppendieck',
-    number: '39-23-6423122',
-  },
-]
-
-const getNumberOfEntries = (entries) => {
-  return entries.length
-}
-
 app.get('/info', (req, res) => {
   Person.find({})
     .then((result) => {
@@ -113,6 +86,20 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .then(() => res.status(204).end())
     .catch((err) => next(err))
 })
+
+/**
+ * Error handler
+ */
+const errorHandler = (error, req, res, next) => {
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'Unable to lookup person with provided ID' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
