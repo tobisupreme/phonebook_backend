@@ -77,6 +77,27 @@ app.post('/api/persons', (req, res) => {
   newPerson.save().then(() => res.json(newPerson))
 })
 
+/* 
+ * Update phonebook entry 
+ */
+app.put('/api/persons/:id', (req, res) => {
+  const id = req.params.id
+  const body = req.body
+
+  const updatedPerson = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(id, updatedPerson, {new: true})
+    .then((returnedObject) => {
+      res.json(returnedObject)
+    })
+    .catch(err => {
+      next(err)
+    })
+})
+
 /**
  * Delete phonebook entries
  */
