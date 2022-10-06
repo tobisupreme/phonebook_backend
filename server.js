@@ -57,7 +57,7 @@ app.get('/api/persons/:id', async (req, res) => {
 /**
  * Add phonebook entry
  */
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body
 
   if (!(body.name && body.number)) {
@@ -68,13 +68,16 @@ app.post('/api/persons', (req, res) => {
     name: body.name,
     number: body.number,
   })
-  newPerson.save().then(() => res.json(newPerson))
+  newPerson
+    .save()
+    .then(() => res.json(newPerson))
+    .catch((err) => next(err))
 })
 
 /* 
  * Update phonebook entry 
  */
-app.put('/api/persons/:id', (req, res) => {
+app.put('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
   const body = req.body
 
@@ -83,11 +86,11 @@ app.put('/api/persons/:id', (req, res) => {
     number: body.number,
   }
 
-  Person.findByIdAndUpdate(id, updatedPerson, {new: true})
+  Person.findByIdAndUpdate(id, updatedPerson, { new: true, runValidators: true, context: 'query' })
     .then((returnedObject) => {
       res.json(returnedObject)
     })
-    .catch(err => {
+    .catch((err) => {
       next(err)
     })
 })
@@ -109,6 +112,8 @@ const errorHandler = (error, req, res, next) => {
 
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'Unable to lookup person with provided ID' })
+  } else if (error.name === 'ValidationError') {
+    return res.status(400).send({ error: error.message })
   }
 
   next(error)
