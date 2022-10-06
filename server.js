@@ -16,12 +16,15 @@ morgan.token('reqBody', (req) => {
 
 app.use(morgan(':method :url :status :response-time ms :reqBody'))
 
-app.get('/info', (req, res) => {
+/**
+ * Get information about phonebook entries
+ */
+app.get('/info', async (req, res) => {
   Person.find({})
     .then((result) => {
       const resultObj = {}
       resultObj.phonebook = {
-        count: getNumberOfEntries(result),
+        count: result.length,
         date: new Date(),
       }
       return resultObj
@@ -31,44 +34,35 @@ app.get('/info', (req, res) => {
     })
 })
 
+/**
+ * Get all phonebook entries
+ */
 app.get('/api/persons', (req, res) => {
   Person.find({}).then((result) => res.json(result))
 })
 
-app.get('/api/persons/:id', (req, res) => {
-  const entryId = Number(req.params.id)
-  const entry = entries.find((entry) => entry.id === entryId)
+/**
+ * Get phonebook entry by id
+ */
+app.get('/api/persons/:id', async (req, res) => {
+  const entryId = req.params.id
+  const entry = await Person.findById(entryId)
   if (entry) {
-    res.send(entry).end()
+    res.json(entry).end()
   } else {
     res.status(404).end()
   }
 })
 
-const generateId = () => {
-  return Math.floor(Math.random() * 9999999)
-}
-
-function checkDuplicate(name) {
-  let entryNames = entries.map((entry) => entry.name.toLocaleLowerCase())
-
-  for (let i = 0; i < entryNames.length; i++) {
-    if (entryNames[i] == name.toLocaleLowerCase()) {
-      return true
-    }
-  }
-
-  return false
-}
-
+/**
+ * Add phonebook entry
+ */
 app.post('/api/persons', (req, res) => {
   const body = req.body
 
   if (!(body.name && body.number)) {
     return res.status(400).send({ error: 'You must provide a name and number' }).end()
-  } /* else if (checkDuplicate(body.name)) {
-    return res.status(400).send({ error: 'Name must be unique' }).end()
-  } */
+  }
 
   const newPerson = new Person({
     name: body.name,
