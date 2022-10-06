@@ -114,6 +114,8 @@ const errorHandler = (error, req, res, next) => {
     return res.status(400).send({ error: 'Unable to lookup person with provided ID' })
   } else if (error.name === 'ValidationError') {
     return res.status(400).send({ error: error.message })
+  } else if (error.message.indexOf('duplicate key error') !== -1 ) {
+    return res.status(400).send({ error: `${error.keyValue.name} already exists in phonebook` })
   }
 
   next(error)

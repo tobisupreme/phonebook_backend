@@ -11,9 +11,23 @@ const peopleSchema = new mongoose.Schema({
   name: {
     type: String,
     minLength: 3,
-    required: true
+    required: true,
+    unique: true
   },
-  number: String,
+  number: {
+    type: String,
+    minLength: 8,
+    validate: {
+      validator: function (num) {
+        if (num.indexOf('-') !== -1) {
+          return /^\d{2,3}-\d+$/.test(num)
+        } else {
+          return /^\d+$/.test(num)
+        }
+      },
+      message: num => `${num.value} is not a valid phone number. Use only digits. If formed of two parts, use the format xx-xxxxxx or xxx-xxxxxxx where x is a digit`,
+    },
+  },
 })
 
 peopleSchema.set('toJSON', {
